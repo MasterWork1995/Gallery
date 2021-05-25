@@ -4,8 +4,8 @@ const refs = {
     gallery: document.querySelector('.js-gallery'),
     modalWindow: document.querySelector('.js-lightbox'),
     closeModalWindow: document.querySelector('.lightbox__button'),
-    modalImage: document.querySelector('.lightbox__image'),
-    modalOverlay: document.querySelector('.lightbox__overlay')
+    modalImageRef: document.querySelector('.lightbox__image'),
+    modalOverlayRef: document.querySelector('.lightbox__overlay')
 }
 
 // РЕНДЕР РАЗМЕТКИ
@@ -27,12 +27,10 @@ const createGalleryItemsMarkup = array => {
         </li>`})
         .join('')
 };
-console.log(refs.gallery);
-refs.gallery.innerHTML = createGalleryItemsMarkup(galleryItems);
 
 // ОТКРЫТИЕ МОДАЛКИ
 
-const onOpenModal = e => {
+const onOpenModalWindow = e => {
     e.preventDefault();
 
     const targetRef = e.target;
@@ -41,23 +39,65 @@ const onOpenModal = e => {
     }
 
     refs.modalWindow.classList.add('is-open');
-    refs.modalImage.src = targetRef.dataset.source;
-    refs.modalImage.alt = targetRef.alt;
-
+    refs.modalImageRef.src = targetRef.dataset.source;
+    refs.modalImageRef.alt = targetRef.alt;
+    window.addEventListener('keydown', onArrowPress);
+    window.addEventListener('keydown', onEscapePress);
 }
-refs.gallery.addEventListener('click', onOpenModal);
 
-// ДЕЛЕГИРОВАНИЕ
+// ЛИСТАЕМ
 
+const onArrowPress = e => {
+    if(e.code !== 'ArrowRight' && e.code !== 'ArrowLeft') {
+        return
+    }
+    
+    const imagesRef = [];
+    galleryItems.forEach( el => imagesRef.push(el.original))
 
+    const currentIndex = imagesRef.indexOf(refs.modalImageRef.src);
+    console.log(currentIndex)
+    let index;
+    if(e.code === 'ArrowRight') {
+        index = currentIndex + 1;
+        if(index > galleryItems.length - 1) {
+            index = 0
+        }
+    } else if (e.code === 'ArrowLeft') {
+        index = currentIndex - 1;
+        if(index < 0) {
+            index = galleryItems.length - 1
+        }
+    }
+
+    refs.modalImageRef.src = galleryItems[index].original;
+    refs.modalImageRef.alt = galleryItems[index].description;
+}
 
 // ЗАКРЫТИЕ МОДАЛКИ
 
-const onCloseModal = e => {
+const onCloseModalWindow = e => {
     refs.modalWindow.classList.remove('is-open');
-    refs.modalImage.src = '';
-    refs.modalImage.alt = '';
+    refs.modalImageRef.src = '';
+    refs.modalImageRef.alt = '';
+    window.removeEventListener('keydown', onArrowPress);
+    window.removeEventListener('keydown', onEscapePress);
 }
 
-refs.closeModalWindow.addEventListener('click', onCloseModal);
+const onOverlayClick = e => {
+    if(e.target === refs.modalOverlayRef) {
+        onCloseModalWindow();
+    }
+}
+
+const onEscapePress = e => {
+    if(e.code === 'Escape') {
+        onCloseModalWindow();
+    }
+}
+
+refs.gallery.insertAdjacentHTML('afterbegin', createGalleryItemsMarkup(galleryItems));
+refs.gallery.addEventListener('click', onOpenModalWindow);
+refs.closeModalWindow.addEventListener('click', onCloseModalWindow);
+refs.modalOverlayRef.addEventListener('click', onOverlayClick);
 
