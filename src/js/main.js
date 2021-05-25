@@ -56,7 +56,6 @@ const onArrowPress = e => {
     galleryItems.forEach( el => imagesRef.push(el.original))
 
     const currentIndex = imagesRef.indexOf(refs.modalImageRef.src);
-    console.log(currentIndex)
     let index;
     if(e.code === 'ArrowRight') {
         index = currentIndex + 1;
@@ -69,6 +68,22 @@ const onArrowPress = e => {
             index = galleryItems.length - 1
         }
     }
+
+    // const currentImageRef = galleryItems.find(image => 
+    //     image.original === refs.modalImageRef.src);
+
+    // let index; 
+    // if(e.code === 'ArrowRight') {
+    //     index = (galleryItems.indexOf(currentImageRef) + 1);
+    // } else if(e.code === 'ArrowLeft') {
+    //     index = (galleryItems.indexOf(currentImageRef) - 1);
+    // }
+    // if (index < 0) {
+    //     index = galleryItems.length - 1
+    // };
+    // if (index > galleryItems.length - 1) {
+    //     index = 0
+    // };
 
     refs.modalImageRef.src = galleryItems[index].original;
     refs.modalImageRef.alt = galleryItems[index].description;
