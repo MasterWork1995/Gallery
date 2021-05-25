@@ -4,8 +4,8 @@ const refs = {
     gallery: document.querySelector('.js-gallery'),
     modalWindow: document.querySelector('.js-lightbox'),
     closeModalWindow: document.querySelector('.lightbox__button'),
-    modalImageLightbox: document.querySelector('.lightbox__image'),
-    modalOverlayLightbox: document.querySelector('.lightbox__overlay')
+    modalImage: document.querySelector('.lightbox__image'),
+    modalOverlay: document.querySelector('.lightbox__overlay')
 }
 
 // РЕНДЕР РАЗМЕТКИ
@@ -32,9 +32,32 @@ refs.gallery.innerHTML = createGalleryItemsMarkup(galleryItems);
 
 // ОТКРЫТИЕ МОДАЛКИ
 
+const onOpenModal = e => {
+    e.preventDefault();
+
+    const targetRef = e.target;
+    if(!targetRef.classList.contains('gallery__image')) {
+        return
+    }
+
+    refs.modalWindow.classList.add('is-open');
+    refs.modalImage.src = targetRef.dataset.source;
+    refs.modalImage.alt = targetRef.alt;
+
+}
+refs.gallery.addEventListener('click', onOpenModal);
 
 // ДЕЛЕГИРОВАНИЕ
 
 
 
 // ЗАКРЫТИЕ МОДАЛКИ
+
+const onCloseModal = e => {
+    refs.modalWindow.classList.remove('is-open');
+    refs.modalImage.src = '';
+    refs.modalImage.alt = '';
+}
+
+refs.closeModalWindow.addEventListener('click', onCloseModal);
+
